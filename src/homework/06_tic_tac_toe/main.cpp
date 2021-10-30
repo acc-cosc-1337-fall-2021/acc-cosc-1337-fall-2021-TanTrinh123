@@ -1,176 +1,83 @@
-// includes
 #include "tic_tac_toe.h"
 #include <iostream>
-#include <time.h>
-#include <limits>
 
 // using
 using std::cin; using std::cout;
 
-// main
-int main() 
-{
+int main(){
+
 	// class declaration
 	TicTacToe game;
-	GamePlay play;
-	StringExtension stng;
 
 	// variables
-	int mode;
-	int game_count;
-	int turn_count;
 	int position;
-	double tm_elapsed;
 	string play_again;
 	string first_player;
-	string current_player;
+	string game_winner;
 
 	// initialized variables
-	game_count = 0;
 	play_again = "y";
-	int auto_positions[9] = {1,2,3,4,5,7,6,9,8};			// array for automated play
-
-	// clear history
-	play.clear_game_history();
 
 	// program information
-	cout << "\nWelcome to Tic-Tac-Toe!\n";
+	cout << "\nThis program is a game that is known as Tic-Tac-Toe\n";
 
-	// starting game time
-	time_t start = time(NULL);
-
+	// continue while user enters 'y' to keep playing game.
 	do
 	{
-		// set mode - auto, against computer, or live
-		play.display_menu();
-		cin >> mode;
-
-		while (!std::cin.good())
+		// continue until user enters 'X' or 'O'; for first_player
+		do
 		{
-    		cin.clear();
-    		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    		cout<<"\nThat was not a number.\n";
-			play.display_menu();
-			cin >> mode;
-		}
+			// get X or O for first player
+			cout << "\nDo you want to be 'X' or 'O'? ";
+			cin >> first_player;
+			strToUpper(first_player);
+			
+		} while (first_player != "X" && first_player != "O");
 
-		// player decision 
-		if(mode == 1 || mode == 2)
-		{
-			do
-			{
-				// get X or O for first player
-				cout << "\nWould you like to be player X or O? ";
-				cin >> first_player;
-				stng.strToUpper(first_player);
-
-			// continue until chooser picks x or o
-			} while (first_player != "X" && first_player != "O");
-		}
-		else if (mode == 0)
-		{
-			first_player = "X";
-		}
-		else
-		{
-			// quit game
-			break;
-		}
-
-		// display board for game start
+		// start game and display board
 		game.start_game(first_player);
 		game.display_board();
-
-		// user input - wait for user to be ready
-		system("pause");
-
-		// set counter for rounds
-		turn_count = 0;
-
+		
 		// game runs until board is full
 		do
 		{
-			// display round
-			cout << "Round " << turn_count + 1 << "\n\n";
+			// user interaction; get position
+			cout<<"\nSelect a position between 1 and 9: ";
+			cin>>position;
 
-			// get current player
-			current_player = game.get_player();
-
-			// get position
-			if(mode == 1 || mode == 2)
-			{
-				// mode 1 - play against computer
-				if(mode == 1 && current_player != first_player)
-				{
-					position = play.get_next_move();
-				}
-				else
-				{
-					do
-					{
-						cout<<"Select a position between 1 and 9: ";
-						cin>>position;
-						if (!std::cin.good())
-						{
-							cin.clear();
-							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							position = 12345;
-						}
-
-					// continue until position is valid number
-					} while (play.validate_position(position) == false);
-				}
-			}
-			else
-			{
-				// automated choice from array and output text
-				position = auto_positions[turn_count];
-			}
-			
-			// update turn history
-			play.update_turn_history(current_player, position, turn_count);
-
-			// display turn info
-			play.display_turn_info();
-
-			// mark position and display board
+			// mark position on board and display marked board
 			game.mark_board(position);
 			game.display_board();
 
-			// update turn count
-			turn_count++;
-
+		// check to see if all positions are filled or if winner has been found; if true, end game
 		} while (game.game_over() == false);
 
-		// update game history
-		play.update_game_history(game_count, mode);
+		// output
+		cout << "Game Over\n\n";
 
-		// update game count
-		game_count++;
+		// check for winner
+		game_winner = game.get_winner();
+		if(game_winner == "C")
+		{
+			cout << "It's a tie!\n";
+		}
+		else
+		{
+			cout << "The winner is " << game_winner << "!  Congratulations!\n\n";
+		}
 
-		// clear board 
-		game.end_game();
-		play.clear_game_history();
+		// reset board using start_game function
+		game.start_game(first_player);
 
 		// user interaction - play again
-		cout << "\nPlay again?  Enter 'y' for 'yes' or 'n' for 'no': ";
+		cout << "\nDo you want to play again?  Enter 'y' for 'yes' or 'n' for 'no': ";
 		cin >> play_again;
-		stng.strToLower(play_again);
+		strToLower(play_again);
 
-	} while(play_again == "y");
+	} while (play_again == "y");
 
-	// end time and get difference
-	time_t end = time(NULL);
-	tm_elapsed = end - start;
-
-	// clear console
-	//system("clear");
-
-	// display game history
-	play.display_game_history(tm_elapsed);
-
-	// end game
-	cout<< "\nThanks for Playing!\n";
+	// output - end of game
+	cout << "\nProgram exiting.\n";
 	
 	// return
 	return 0;
